@@ -2,35 +2,55 @@
   import { restaurants } from '../../../data/restaurants';
   import { page } from '$app/stores';
   import Page from '../../../lib/structure/Page.svelte';
+  import StarRangeInput from '../../../lib/StarRangeInput.svelte';
 
   $: restaurant = restaurants[$page.params.id];
+
+  let restaurantRating: number = 4;
+  $: restaurantRating =
+    restaurant.reviews.reduce((acc, review) => acc + review.rating, 0) / restaurant.reviews.length;
 
   let name: string = '';
   let review: string = '';
   let starRating: number = 4;
-  let starInput: HTMLInputElement;
-  $: starInput?.style?.setProperty('--value', String(starRating));
 
   function handleSubmit() {
-    console.log('submit', name, starRating, review);
+    restaurant.reviews = [
+      ...restaurant.reviews,
+      {
+        name,
+        rating: starRating,
+        comment: review
+      }
+    ];
   }
 </script>
 
 <Page title={restaurant.name} description={restaurant.description}>
   <img src={restaurant.image} alt="{restaurant.name} image" slot="pre-intro" />
+  <div class="rating">
+    <StarRangeInput disabled id="rating" min={1} max={5} step={1} value={restaurantRating} />
+    <span>{restaurantRating.toFixed(1)} / 5</span>
+  </div>
+
+  <h2>Reviews</h2>
+  <div class="reviews">
+    {#each restaurant.reviews as review}
+      <div class="review">
+        <div class="info">
+          <h3>{review.name}</h3>
+          <p>{review.comment}</p>
+        </div>
+        <StarRangeInput disabled id="rating" min={1} max={5} step={1} value={review.rating} />
+      </div>
+    {/each}
+  </div>
   <h2>Write a review</h2>
   <form on:submit|preventDefault={handleSubmit}>
     <label for="name">Name</label>
     <input type="text" id="name" name="name" bind:value={name} />
     <label for="rating">Stars</label>
-    <input
-      bind:this={starInput}
-      id="rating"
-      max="5"
-      step="1"
-      type="range"
-      bind:value={starRating}
-    />
+    <StarRangeInput id="rating" min={1} max={5} step={1} bind:value={starRating} />
     <label for="review">Review</label>
     <textarea id="review" name="review" bind:value={review} />
     <button type="submit">Submit</button>
@@ -79,48 +99,45 @@
     background-color: #ccc;
   }
 
-  /* from https://dev.to/madsstoumann/star-rating-using-a-single-input-i0l */
-  #rating {
-    --dir: right;
-    --fill: gold;
-    --fillbg: rgba(100, 100, 100, 0.15);
-    --heart: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.328l-1.453-1.313q-2.484-2.25-3.609-3.328t-2.508-2.672-1.898-2.883-0.516-2.648q0-2.297 1.57-3.891t3.914-1.594q2.719 0 4.5 2.109 1.781-2.109 4.5-2.109 2.344 0 3.914 1.594t1.57 3.891q0 1.828-1.219 3.797t-2.648 3.422-4.664 4.359z"/></svg>');
-    --star: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.25l-6.188 3.75 1.641-7.031-5.438-4.734 7.172-0.609 2.813-6.609 2.813 6.609 7.172 0.609-5.438 4.734 1.641 7.031z"/></svg>');
-    --stars: 5;
-    --starsize: 3rem;
-    --symbol: var(--star);
-    --value: 4;
-    --w: calc(var(--stars) * var(--starsize));
-    --x: calc(100% * (var(--value) / var(--stars)));
-    block-size: var(--starsize);
-    inline-size: var(--w);
-    position: relative;
-    touch-action: manipulation;
-    -webkit-appearance: none;
+  .reviews {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 70%;
   }
-  [dir='rtl'] #rating {
-    --dir: left;
+
+  .review {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
-  #rating::-moz-range-track {
-    background: linear-gradient(to var(--dir), var(--fill) 0 var(--x), var(--fillbg) 0 var(--x));
-    block-size: 100%;
-    mask: repeat left center/var(--starsize) var(--symbol);
+
+  .review .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
-  #rating::-webkit-slider-runnable-track {
-    background: linear-gradient(to var(--dir), var(--fill) 0 var(--x), var(--fillbg) 0 var(--x));
-    block-size: 100%;
-    mask: repeat left center/var(--starsize) var(--symbol);
-    -webkit-mask: repeat left center/var(--starsize) var(--symbol);
+
+  .review .info h3 {
+    margin-bottom: 0;
   }
-  #rating::-moz-range-thumb {
-    height: var(--starsize);
-    opacity: 0;
-    width: var(--starsize);
+
+  .review:nth-child(even) {
+    background-color: #f5f5f5;
   }
-  #rating::-webkit-slider-thumb {
-    height: var(--starsize);
-    opacity: 0;
-    width: var(--starsize);
-    -webkit-appearance: none;
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .rating span {
+    font-weight: bold;
+    font-size: 1.5rem;
   }
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { restaurants } from '../../data/restaurants';
   import Page from '../../lib/structure/Page.svelte';
+  import StarRangeInput from '../../lib/StarRangeInput.svelte';
   console.log(restaurants);
 </script>
 
@@ -14,6 +15,16 @@
         <h2>{restaurant.name}</h2>
         <p>{restaurant.description}</p>
       </div>
+      <span class="rating">
+        <StarRangeInput
+          disabled
+          min={1}
+          max={5}
+          step={1}
+          value={restaurant.reviews.reduce((total, { rating }) => total + rating, 0) /
+            restaurant.reviews.length}
+        />
+      </span>
     </a>
   {/each}
 </Page>
@@ -45,7 +56,7 @@
   .restaurant .image {
     width: 120px;
     height: 120px;
-    margin-right: 1em;
+    margin-right: 2em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,5 +65,9 @@
   .restaurant .image img {
     max-width: 100%;
     max-height: 100%;
+  }
+
+  .restaurant .rating {
+    margin-left: auto;
   }
 </style>
