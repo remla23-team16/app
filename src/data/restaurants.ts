@@ -3,6 +3,8 @@ export type Restaurant = {
   description: string;
   image: string;
   reviews: Review[];
+  positiveSentimentImage: string;
+  negativeSentimentImage: string;
 };
 
 export type Review = {
@@ -32,7 +34,9 @@ export const restaurants: Restaurant[] = [
         comment: 'I love the chicken',
         rating: 4
       }
-    ]
+    ],
+    positiveSentimentImage: '/happy-gus.jpg',
+    negativeSentimentImage: '/angry-gus.jpg'
   },
   {
     name: 'Cinnabon',
@@ -44,7 +48,9 @@ export const restaurants: Restaurant[] = [
         comment: 'Best rolls in town!',
         rating: 5
       }
-    ]
+    ],
+    positiveSentimentImage: '/happy-saul.jpg',
+    negativeSentimentImage: '/sad-jimmy.png'
   },
   {
     name: 'City Sushi',
@@ -56,7 +62,9 @@ export const restaurants: Restaurant[] = [
         comment: 'Bad sushi!',
         rating: 1
       }
-    ]
+    ],
+    positiveSentimentImage: '/ok-junichi.jpg',
+    negativeSentimentImage: '/angry-junichi.jpeg'
   },
   {
     name: 'City Wok',
@@ -68,6 +76,8 @@ export const restaurants: Restaurant[] = [
         rating: 1,
         comment: 'Bad food!'
       }
-    ]
+    ],
+    positiveSentimentImage: '/happy-tuong.jpeg',
+    negativeSentimentImage: '/angry-tuong.png'
   }
 ];

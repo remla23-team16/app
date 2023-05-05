@@ -1,18 +1,29 @@
 <script lang="ts">
   import { restaurants } from '../../../data/restaurants';
+  import type { Restaurant } from '../../../data/restaurants';
   import { page } from '$app/stores';
   import Page from '../../../lib/structure/Page.svelte';
   import StarRangeInput from '../../../lib/StarRangeInput.svelte';
 
+  let restaurant: Restaurant;
   $: restaurant = restaurants[$page.params.id];
 
   let restaurantRating: number = 4;
   $: restaurantRating =
     restaurant.reviews.reduce((acc, review) => acc + review.rating, 0) / restaurant.reviews.length;
 
-  let name: string = '';
-  let review: string = '';
-  let starRating: number = 4;
+  let name = '';
+  let review = '';
+  let starRating = 4;
+
+  let sentiment: 'positive' | 'negative' = 'positive';
+
+  $: sentiment = starRating >= 4 ? 'positive' : 'negative';
+
+  $: sentimentImg =
+    sentiment === 'positive'
+      ? restaurant.positiveSentimentImage
+      : restaurant.negativeSentimentImage;
 
   function handleSubmit() {
     restaurant.reviews = [
@@ -30,7 +41,7 @@
   <img src={restaurant.image} alt="{restaurant.name} image" slot="pre-intro" />
   <div class="rating">
     <StarRangeInput disabled id="rating" min={1} max={5} step={1} value={restaurantRating} />
-    <span>{restaurantRating.toFixed(1)} / 5</span>
+    <span>{restaurantRating.toFixed(1)} / 5.0</span>
   </div>
 
   <h2>Reviews</h2>
@@ -53,6 +64,14 @@
     <StarRangeInput id="rating" min={1} max={5} step={1} bind:value={starRating} />
     <label for="review">Review</label>
     <textarea id="review" name="review" bind:value={review} />
+    <p class="sentiment">Sentiment</p>
+    <span>
+      {#if sentiment}
+        <img class="sentimentImg" src={sentimentImg} alt="{sentiment} sentiment" />
+      {:else}
+        unknown
+      {/if}
+    </span>
     <button type="submit">Submit</button>
   </form>
 </Page>
@@ -66,9 +85,11 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 50%;
   }
 
-  label {
+  label,
+  .sentiment {
     font-weight: bold;
   }
 

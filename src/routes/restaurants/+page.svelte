@@ -2,7 +2,6 @@
   import { restaurants } from '../../data/restaurants';
   import Page from '../../lib/structure/Page.svelte';
   import StarRangeInput from '../../lib/StarRangeInput.svelte';
-  console.log(restaurants);
 </script>
 
 <Page title="Restaurants" description="Browse our curated list of restaurants in the area">
