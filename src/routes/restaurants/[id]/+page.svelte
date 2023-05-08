@@ -6,24 +6,33 @@
   import StarRangeInput from '../../../lib/StarRangeInput.svelte';
 
   let restaurant: Restaurant;
-  $: restaurant = restaurants[$page.params.id];
+  $: {
+    const id = Number($page.params.id);
+    if (!Number.isNaN(id)) {
+      restaurant = restaurants[id];
+    }
+  }
 
-  let restaurantRating: number = 4;
-  $: restaurantRating =
-    restaurant.reviews.reduce((acc, review) => acc + review.rating, 0) / restaurant.reviews.length;
-
+  let restaurantRating = 4;
   let name = '';
   let review = '';
   let starRating = 4;
 
   let sentiment: 'positive' | 'negative' = 'positive';
+  let sentimentImg = '';
 
-  $: sentiment = starRating >= 4 ? 'positive' : 'negative';
-
-  $: sentimentImg =
-    sentiment === 'positive'
-      ? restaurant.positiveSentimentImage
-      : restaurant.negativeSentimentImage;
+  $: {
+    sentiment = starRating >= 4 ? 'positive' : 'negative';
+    if (restaurant) {
+      restaurantRating =
+        restaurant.reviews.reduce((acc, review) => acc + review.rating, 0) /
+        restaurant.reviews.length;
+      sentimentImg =
+        sentiment === 'positive'
+          ? restaurant.positiveSentimentImage
+          : restaurant.negativeSentimentImage;
+    }
+  }
 
   function handleSubmit() {
     restaurant.reviews = [
@@ -37,6 +46,7 @@
   }
 </script>
 
+{#if restaurant}
 <Page title={restaurant.name} description={restaurant.description}>
   <img src={restaurant.image} alt="{restaurant.name} image" slot="pre-intro" />
   <div class="rating">
@@ -75,6 +85,9 @@
     <button type="submit">Submit</button>
   </form>
 </Page>
+{:else}
+  <Page title="Restaurant not found" />
+{/if}
 
 <style>
   img {
@@ -98,10 +111,6 @@
     padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 0.25rem;
-  }
-
-  input[type='range'] {
-    border: 0;
   }
 
   button {

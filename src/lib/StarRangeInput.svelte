@@ -1,10 +1,10 @@
 <script lang="ts">
-  export let value: number = 0;
-  export let min: number = 0;
-  export let max: number = 5;
-  export let step: number = 1;
-  export let id: string = '';
-  export let disabled: boolean = false;
+  export let value = 0;
+  export let min = 0;
+  export let max = 5;
+  export let step = 1;
+  export let id = '';
+  export let disabled = false;
 
   let input: HTMLInputElement;
 
@@ -42,11 +42,11 @@
     inline-size: var(--w);
     position: relative;
     touch-action: manipulation;
-    -webkit-appearance: none;
+    appearance: none;
   }
-  [dir='rtl'] .rating {
-    --dir: left;
-  }
+  /*[dir='rtl'] .rating {*/
+  /*  --dir: left;*/
+  /*}*/
   .rating::-moz-range-track {
     background: linear-gradient(to var(--dir), var(--fill) 0 var(--x), var(--fillbg) 0 var(--x));
     block-size: 100%;
@@ -67,7 +67,7 @@
     height: var(--starsize);
     opacity: 0;
     width: var(--starsize);
-    -webkit-appearance: none;
+    appearance: none;
   }
 
   .rating:enabled:hover {
