@@ -70,22 +70,25 @@
   }
 
   // https://thefrontendteam.com/pills/svelte-input-keyup-stop-writing-custom-event/
-  function debounce(inputFunction, timeToWaitBeforeFiringInMs = 500) {
-    let timer;
-    return (...args) => {
+  function debounce<A extends unknown[]>(
+    inputFunction: (...args: A) => unknown,
+    timeToWaitBeforeFiringInMs = 500
+  ) {
+    let timer: ReturnType<typeof setTimeout>;
+    return (...args: A) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        inputFunction.apply(this, args);
+        inputFunction(...args);
       }, timeToWaitBeforeFiringInMs);
     };
   }
 
-  function stopTyping(node) {
+  function updateReviewSentiment(node: HTMLTextAreaElement) {
     const handleKeyup = debounce((event: KeyboardEvent) => {
       // (1) the debounce logic
-      if (node.contains(event.target)) {
+      if (node.contains(event.target as Node)) {
         // (2) restrict the event to the only referring node
-        node.dispatchEvent(new CustomEvent('stopTyping')); // (3) fire the event
+        updateSentiment();
       }
     }, 500);
 
@@ -139,13 +142,7 @@
       <label for="rating">Stars</label>
       <StarRangeInput id="rating" min={1} max={5} step={1} bind:value={starRating} />
       <label for="review">Review</label>
-      <textarea
-        id="review"
-        name="review"
-        bind:value={review}
-        use:stopTyping
-        on:stopTyping={updateSentiment}
-      />
+      <textarea id="review" name="review" bind:value={review} use:updateReviewSentiment />
       <p class="sentiment">Sentiment</p>
       <span>
         {#if sentiment}
@@ -158,7 +155,7 @@
     </form>
   </Page>
 {:else}
-  <Page title="Restaurant not found" />
+  <Page title="Restaurant not found" description="Try another one" />
 {/if}
 
 <style>

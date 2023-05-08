@@ -14,6 +14,8 @@ jobs:
           node-version: 'lts/Hydrogen'
       - name: Install dependencies
         run: npm ci
+      - name: Set required env variables (non-sensitive)
+        run: echo "PUBLIC_BACKEND_URL=http://localhost:3000" >> .env
       - name: Set up and check SvelteKit
         run: npm run check
       - name: Lint
