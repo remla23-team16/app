@@ -4,7 +4,7 @@
   import { page } from '$app/stores';
   import Page from '../../../lib/structure/Page.svelte';
   import StarRangeInput from '../../../lib/StarRangeInput.svelte';
-  import { PUBLIC_BACKEND_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
 
   let restaurant: Restaurant;
   $: {
@@ -45,7 +45,7 @@
   }
 
   async function getSentiment(text: string): Promise<'positive' | 'negative'> {
-    const endpointUrl = new URL(`/${decodeURIComponent(text)}`, PUBLIC_BACKEND_URL);
+    const endpointUrl = new URL(`/${decodeURIComponent(text)}`, env.PUBLIC_BACKEND_URL);
     const response = await fetch(endpointUrl.toString(), { method: 'GET' });
     if (!response.ok) {
       throw new Error(`Error getting sentiment: ${response.statusText}`);

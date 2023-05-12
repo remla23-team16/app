@@ -7,6 +7,6 @@ RUN ls
 RUN ./node_modules/.bin/svelte-kit sync
 RUN npm run build
 ENV PORT=3000
-ENV BACKEND_URL=http://localhost:8080
+ENV PUBLIC_BACKEND_URL=http://localhost:8080
 EXPOSE $PORT
 CMD ["node", "build/index.js"]
