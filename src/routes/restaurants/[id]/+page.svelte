@@ -4,7 +4,6 @@
   import { page } from '$app/stores';
   import Page from '../../../lib/structure/Page.svelte';
   import StarRangeInput from '../../../lib/StarRangeInput.svelte';
-  import { env } from '$env/dynamic/public';
 
   let restaurant: Restaurant;
   $: {
@@ -45,28 +44,21 @@
   }
 
   async function getSentiment(text: string): Promise<'positive' | 'negative'> {
-    const endpointUrl = new URL(`/${decodeURIComponent(text)}`, env.PUBLIC_BACKEND_URL);
-    const response = await fetch(endpointUrl.toString(), { method: 'GET' });
+    const params = new URLSearchParams({ text });
+    const response = await fetch(`/api/sentiment?${params.toString()}`, { method: 'GET' });
+
     if (!response.ok) {
       throw new Error(`Error getting sentiment: ${response.statusText}`);
     }
+
     const json = await response.json();
+    const sentiment = json?.sentiment;
 
-    if (!Array.isArray(json) || json.length !== 1 || typeof json[0] !== 'number') {
-      throw new Error(
-        'Invalid response from sentiment endpoint. Expected array of length 1, containing a number'
-      );
+    if (!sentiment) {
+      throw new Error('Error getting sentiment: no sentiment returned');
     }
 
-    const [sentiment] = json;
-
-    if (sentiment === 0) {
-      return 'negative';
-    } else if (sentiment === 1) {
-      return 'positive';
-    } else {
-      throw new Error(`Invalid sentiment value: ${sentiment}`);
-    }
+    return sentiment;
   }
 
   // https://thefrontendteam.com/pills/svelte-input-keyup-stop-writing-custom-event/
