@@ -1,16 +1,15 @@
 <script lang="ts">
-  import { restaurants } from '../../../data/restaurants';
   import type { Restaurant } from '../../../data/restaurants';
-  import { page } from '$app/stores';
+  import type { PageData } from './$types';
+  import { invalidateAll } from '$app/navigation';
   import Page from '../../../lib/structure/Page.svelte';
   import StarRangeInput from '../../../lib/StarRangeInput.svelte';
 
+  export let data: PageData;
+
   let restaurant: Restaurant;
   $: {
-    const id = Number($page.params.id);
-    if (!Number.isNaN(id)) {
-      restaurant = restaurants[id];
-    }
+    restaurant = data.restaurant;
   }
 
   let restaurantRating = 4;
@@ -95,15 +94,25 @@
     };
   }
 
-  function handleSubmit() {
-    restaurant.reviews = [
-      ...restaurant.reviews,
-      {
-        name,
-        rating: starRating,
-        comment: review
+  async function handleSubmit() {
+    const body = {
+      id: restaurant.id,
+      name: name,
+      rating: starRating,
+      comment: review,
+      sentiment: sentiment === 'positive' ? 1 : sentiment === 'negative' ? 0 : -1
+    };
+
+    await fetch('/api/restaurants/review/', {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json'
       }
-    ];
+    });
+
+    // reload the PageData
+    invalidateAll();
   }
 </script>
 

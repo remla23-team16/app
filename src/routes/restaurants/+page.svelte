@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { restaurants } from '../../data/restaurants';
+  import type { PageData } from './$types';
   import Page from '../../lib/structure/Page.svelte';
   import StarRangeInput from '../../lib/StarRangeInput.svelte';
+
+  export let data: PageData;
 </script>
 
 <Page title="Restaurants" description="Browse our curated list of restaurants in the area">
-  {#each restaurants as restaurant, i}
+  {#each data.restaurants as restaurant, i}
     <a class="restaurant" href="/restaurants/{i}">
       <div class="image">
         <img src={restaurant.image} alt="{restaurant.name} image" />
