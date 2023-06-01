@@ -7,8 +7,8 @@
 </script>
 
 <Page title="Restaurants" description="Browse our curated list of restaurants in the area">
-  {#each data.restaurants as restaurant, i}
-    <a class="restaurant" href="/restaurants/{i}">
+  {#each data.restaurants as restaurant}
+    <a class="restaurant" href="/restaurants/{restaurant.id}">
       <div class="image">
         <img src={restaurant.image} alt="{restaurant.name} image" />
       </div>
