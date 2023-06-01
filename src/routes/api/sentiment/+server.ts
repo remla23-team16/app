@@ -14,7 +14,7 @@ export const GET: RequestHandler = async (event) => {
     throw error(400, 'You must provide a text to perform sentiment analysis on');
   }
 
-  const endpointUrl = new URL(`/${encodeURIComponent(reviewText)}`, env.BACKEND_URL);
+  const endpointUrl = new URL(`/sentiment/${encodeURIComponent(reviewText)}`, env.BACKEND_URL);
   const response = await fetch(endpointUrl.toString(), { method: 'GET' });
 
   if (!response.ok) {
